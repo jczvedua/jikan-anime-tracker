@@ -1,0 +1,28 @@
+<h3>{{ title }}</h3>
+
+<ul>
+    {% if anime_list %}
+        {% for anime in anime_list %}
+            <a href="{% url 'anime_view' anime.anilist_id %}">
+                <img src="{{ anime.image_url }}" width=150>
+                <p>{{ anime.title}}</p>
+            </a>
+            <p>Episode Progress: {{ anime.progress }}/{{ anime.total_episodes }}</p>
+            <p>Rating: {{ anime.score }}</p>
+            {% if anime.progress != anime.total_episodes %}
+            <form method="POST" action="{% url 'quick_increment' anime.anilist_id %}">
+                {% csrf_token %}
+                <button type="submit">+</button>
+            </form>
+            {% endif %}
+
+            <form method="POST" action="{% url 'remove_from_list' anime.anilist_id %}">
+                {% csrf_token %}
+                <button type="submit">Remove from List</button>
+            </form>
+            {% endfor %}
+        {% else %}
+                <p>This list is empty</p>
+    {% endif %}
+</ul>
+

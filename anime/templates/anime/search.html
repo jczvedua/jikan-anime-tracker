@@ -1,0 +1,39 @@
+<form method="get" action="{% url 'anime_search' %}">
+    <input type="text" name="q" placeholder="Search for anime..." value="{{ query|default:'' }}">
+    <button type="submit">Search</button>
+</form>
+
+<a href="{% url 'random_anime' %}">Random Anime</a>
+<a href="{% url 'view_list' %}">My List</a>
+
+<h4>Watching</h4>
+{% if watching %}
+    {% for anime in watching %}
+        <a href="{% url 'anime_view' anime.anilist_id %}" class="card">
+            <img src="{{ anime.image_url }}" width=100>
+        </a>
+        <form method="POST" action="{% url 'quick_increment' anime.anilist_id %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button type="submit">+</button>
+        </form>
+        <p>{{ anime.progress }}/{{ anime.total_episodes }}</p>
+            
+    {% endfor %}
+{% else %}
+    <p>Empty list</p>
+{% endif %}
+<hr>
+
+{% if anime_list %}
+    <ul>
+        {% for anime in anime_list %}
+            <a href="{% url 'anime_view' anime.id %}" class="card">
+                    <p>{{ anime.title.romaji }}</p>
+                    <img src="{{ anime.coverImage.large }}" width=150>
+            </a>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+

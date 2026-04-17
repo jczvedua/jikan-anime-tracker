@@ -1,0 +1,54 @@
+<h2>{{ anime.title.romaji }}</h2>
+<p>{{ anime.type }}</p>
+<img src="{{ anime.coverImage.large }}" width=150>
+<p>Episode count: {{ anime.episodes }}</p>
+<p>Airing Status: {{ anime.status }}</p>
+
+<button id="clickable">
+            {% if list_entry %}
+                Update Status
+            {% else %}
+                Add to List
+            {% endif %}
+        </button>
+
+<p>{{ anime.description|safe }}</p>
+<a href="https://anilist.co/anime/{{ anime.id }}" target="_blank" rel="noopener noreferrer">Anilist Page</a>
+
+<dialog id="modal">
+    <form method="POST" action="{% url 'add_to_list' anime_id=anime.id %}">
+        {% csrf_token %}
+
+        <div>
+            {{ form.status.label }}
+            {{ form.status }}
+            
+            {{ form.progress.label }}
+            {{ form.progress }}
+
+            {{ form.score.label }}
+            {{ form.score }}
+        </div>
+
+        <button type="submit">
+            {% if list_entry %}
+                Update Status
+            {% else %}
+                Add to List
+            {% endif %}
+        </button>
+
+    </form>
+
+    <button id="exit" onclick="modal.close()">Cancel</button>
+    
+</dialog>
+<a href="{% url 'anime_search' %}">Back to Search</a>
+<a href="{% url 'view_list' %}">My List</a>
+
+<script>
+    const clickable = document.querySelector('#clickable');
+	const modal = document.querySelector('#modal');
+	clickable.addEventListener('click', () => modal.showModal());
+    //modal.addEventListener('click', () => modal.close());
+</script>
