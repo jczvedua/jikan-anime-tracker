@@ -1,6 +1,11 @@
 <a href="{% url 'anime_search' %}">Back to Search</a>
 <br>
-<br>
+
+<form method="get" action="{% url 'list_search' %}">
+    <input type="text" name="q" placeholder="Search list" value="{{ query|default:'' }}">
+    <button type="submit">Search</button>
+</form>
+
 <div class="tabs">
     <button onclick="showTab('watching')">Watching</button>
     <button onclick="showTab('planning')">Plan to Watch</button>

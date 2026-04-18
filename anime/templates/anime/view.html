@@ -1,3 +1,8 @@
+<form method="get" action="{% url 'anime_search' %}">
+    <input type="text" name="q" placeholder="Search for anime..." value="{{ query|default:'' }}">
+    <button type="submit">Search</button>
+</form>
+
 <h2>{{ anime.title.romaji }}</h2>
 <p>{{ anime.type }}</p>
 <img src="{{ anime.coverImage.large }}" width=150>

@@ -274,3 +274,73 @@ def quick_progress_increment(request, anime_id):
     if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts=None):
         return redirect(next_url)
     return redirect("view_list")
+
+def list_search(request):
+    query_text = request.GET.get('q', '')
+    anime_list = []
+
+    if query_text != '':
+        query = """
+        query ($search: String) {
+            Page{
+                media(search: $search, type: ANIME){
+                    id
+                    title {
+                        romaji
+                    }
+                    coverImage {
+                        large
+                    }
+                }
+            }
+        }
+        """
+        variables = {
+            "search": query_text
+        }
+
+        data = fetch_anilist(query, variables)
+        db_list = AnimeList.objects.filter(is_active=True)
+        
+        anime_map = {
+            anime.anilist_id: {
+                "status": anime.status,
+                "progress": anime.progress,
+                "score": anime.score
+            }
+            for anime in db_list
+        }
+        
+        db_ids = set(anime_map.keys())
+
+        filtered = [
+            {
+                "anilist_id": anime["id"],
+                "title": anime["title"]["romaji"],
+                "image_url": anime["coverImage"]["large"],
+
+                **anime_map[anime["id"]]
+            }
+            for anime in data["data"]["Page"]["media"]
+            if anime["id"] in db_ids
+        ]
+
+        watching_list = [a for a in filtered if a["status"] == "watching"]
+        planning_list = [a for a in filtered if a["status"] == "planning"]
+        completed_list = [a for a in filtered if a["status"] == "completed"]
+        paused_list = [a for a in filtered if a["status"] == "paused"]
+        dropped_list = [a for a in filtered if a["status"] == "dropped"]
+
+        context = {
+        "watching": watching_list,
+        "planning": planning_list,
+        "completed": completed_list,
+        "paused": paused_list,
+        "dropped": dropped_list,
+        'query': query_text
+    }
+    
+    else:
+        return redirect("view_list")
+
+    return render(request, "anime/list.html", context)

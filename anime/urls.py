@@ -9,4 +9,5 @@ urlpatterns = [
     path('add/<int:anime_id>/', views.add_to_list, name="add_to_list"),
     path('delete/<int:anime_id>/', views.deactivate_anime, name="remove_from_list"),
     path('increment/<int:anime_id>/', views.quick_progress_increment, name="quick_increment"),
+     path('search_list/', views.list_search, name='list_search')
 ]
