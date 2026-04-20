@@ -1,59 +1,76 @@
-<form method="get" action="{% url 'anime_search' %}">
-    <input type="text" name="q" placeholder="Search for anime..." value="{{ query|default:'' }}">
-    <button type="submit">Search</button>
-</form>
+{% extends "anime/_base.html" %}
 
-<h2>{{ anime.title.romaji }}</h2>
-<p>{{ anime.type }}</p>
-<img src="{{ anime.coverImage.large }}" width=150>
-<p>Episode count: {{ anime.episodes }}</p>
-<p>Airing Status: {{ anime.status }}</p>
+{% block content %}
 
-<button id="clickable">
-            {% if list_entry %}
-                Update Status
-            {% else %}
-                Add to List
-            {% endif %}
-        </button>
+<div class="ms-3">
 
-<p>{{ anime.description|safe }}</p>
-<a href="https://anilist.co/anime/{{ anime.id }}" target="_blank" rel="noopener noreferrer">Anilist Page</a>
+    <h2 class="mt-2">{{ anime.title.romaji }}</h2>
+    <p>{{ anime.type }}</p>
+    <img src="{{ anime.coverImage.large }}" width=150>
+    <p class="mt-2">Episode count: {{ anime.episodes }}</p>
+    <p>Airing Status: {{ anime.status }}</p>
 
-<dialog id="modal">
-    <form method="POST" action="{% url 'add_to_list' anime_id=anime.id %}">
-        {% csrf_token %}
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal">
+                {% if list_entry %}
+                    Update Status
+                {% else %}
+                    Add to List
+                {% endif %}
+            </button>
 
-        <div>
-            {{ form.status.label }}
-            {{ form.status }}
-            
-            {{ form.progress.label }}
-            {{ form.progress }}
+    <p>{{ anime.description|safe }}</p>
+    <a href="https://anilist.co/anime/{{ anime.id }}" target="_blank" rel="noopener noreferrer">Anilist Page</a>
 
-            {{ form.score.label }}
-            {{ form.score }}
+    <div class="modal fade" id="modal" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>{{ anime.title.romaji }}</h3>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{% url 'add_to_list' anime_id=anime.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">
+                            {{ form.status.label }}:
+                            </label>
+                            {{ form.status }}
+                        </div>
+
+                        <div class="mb-3 d-flex align-items-center gap-2">
+                            <label class="form-label">
+                            {{ form.progress.label }}:
+                            </label>
+                            {{ form.progress }}
+                        </div>
+
+                        <div class="mb-3 d-flex align-items-center gap-2">
+                            <label class="form-label">
+                            {{ form.score.label }}:
+                            </label>
+                            {{ form.score }}
+                        </div>
+                    </form>
+                    <div class="d-flex align-items-center gap-2 modal-footer">
+                        <button class="btn btn-primary btn-sm mt-1" type="submit">
+                                {% if list_entry %}
+                                    Update Status
+                                {% else %}
+                                    Add to List
+                                {% endif %}
+                        </button>
+                        <button class="btn btn-danger btn-sm mt-1" id="exit"data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <button type="submit">
-            {% if list_entry %}
-                Update Status
-            {% else %}
-                Add to List
-            {% endif %}
-        </button>
-
-    </form>
-
-    <button id="exit" onclick="modal.close()">Cancel</button>
-    
-</dialog>
-<a href="{% url 'anime_search' %}">Back to Search</a>
-<a href="{% url 'view_list' %}">My List</a>
-
+    </div>
+</div>
 <script>
-    const clickable = document.querySelector('#clickable');
+    {% comment %} const clickable = document.querySelector('#clickable');
 	const modal = document.querySelector('#modal');
-	clickable.addEventListener('click', () => modal.showModal());
+	clickable.addEventListener('click', () => modal.showModal()); {% endcomment %}
     //modal.addEventListener('click', () => modal.close());
 </script>
+
+{% endblock %}

@@ -73,6 +73,8 @@ def anime_search(request):
                     title {
                         romaji
                     }
+                    status
+                    episodes
                     coverImage {
                         large
                     }
@@ -205,7 +207,7 @@ def view_list(request):
         "planning": planning_list,
         "completed": completed_list,
         "paused": paused_list,
-        "dropped": dropped_list
+        "dropped": dropped_list,
     }
 
     ids = []
@@ -246,7 +248,7 @@ def view_list(request):
         for anime in anime_list:
             api = anime_map.get(anime.anilist_id, {})
 
-            anime.title = api.get("title", {}).get("english") or api.get("title", {}).get("romaji") or api.get("title", {}).get("native")
+            anime.title = api.get("title", {}).get("romaji")
             anime.image_url = api.get("coverImage", {}).get("large")
             ## anime.total_episodes = api.get("episodes")
 
@@ -306,11 +308,12 @@ def list_search(request):
             anime.anilist_id: {
                 "status": anime.status,
                 "progress": anime.progress,
-                "score": anime.score
+                "score": anime.score,
+                "total_episodes": anime.total_episodes
             }
             for anime in db_list
         }
-        
+
         db_ids = set(anime_map.keys())
 
         filtered = [

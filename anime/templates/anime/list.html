@@ -1,48 +1,40 @@
-<a href="{% url 'anime_search' %}">Back to Search</a>
-<br>
+{% extends "anime/_base.html" %}
 
-<form method="get" action="{% url 'list_search' %}">
-    <input type="text" name="q" placeholder="Search list" value="{{ query|default:'' }}">
-    <button type="submit">Search</button>
-</form>
+{% block content %}
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#watching">Watching</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#planning">Plan to Watch</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#completed">Completed</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#paused">On Hold</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#dropped">Dropped</button>
+    </li>
+</ul>
 
-<div class="tabs">
-    <button onclick="showTab('watching')">Watching</button>
-    <button onclick="showTab('planning')">Plan to Watch</button>
-    <button onclick="showTab('completed')">Completed</button>
-    <button onclick="showTab('paused')">On Hold</button>
-    <button onclick="showTab('dropped')">Dropped</button>
+<div class="tab-content mt-3">
+    <div id="watching" class="tab-pane fade show active">
+        {% include "anime/_list_layout.html" with anime_list=watching title="Watching" %}
+    </div>
+    <div id="planning" class="tab-pane fade">
+        {% include "anime/_list_layout.html" with anime_list=planning title="Plan to Watch" %}
+    </div>
+    <div id="completed" class="tab-pane fade">
+        {% include "anime/_list_layout.html" with anime_list=completed title="Completed" %}
+    </div>
+    <div id="paused" class="tab-pane fade">
+        {% include "anime/_list_layout.html" with anime_list=paused title="On Hold" %}
+    </div>
+    <div id="dropped" class="tab-pane fade">
+        {% include "anime/_list_layout.html" with anime_list=dropped title="Dropped" %}
+    </div>
 </div>
 
-<div id="watching" class="tab-content">
-    {% include "anime/_list_layout.html" with anime_list=watching title="Watching" %}
-</div>
-
-<div id="planning" class="tab-content">
-    {% include "anime/_list_layout.html" with anime_list=planning title="Plan to Watch" %}
-</div>
-
-<div id="completed" class="tab-content">
-    {% include "anime/_list_layout.html" with anime_list=completed title="Completed" %}
-</div>
-
-<div id="paused" class="tab-content">
-    {% include "anime/_list_layout.html" with anime_list=paused title="On Hold" %}
-</div>
-
-<div id="dropped" class="tab-content">
-    {% include "anime/_list_layout.html" with anime_list=dropped title="Dropped" %}
-</div>
-
-<script>
-    function showTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(el => {
-            el.style.display = 'none';
-        });
-        document.getElementById(tabId).style.display = 'block';
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        showTab('watching');
-    });
-</script>
+{% endblock %}

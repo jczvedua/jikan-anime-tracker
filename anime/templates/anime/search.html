@@ -1,39 +1,54 @@
-<form method="get" action="{% url 'anime_search' %}">
-    <input type="text" name="q" placeholder="Search for anime..." value="{{ query|default:'' }}">
-    <button type="submit">Search</button>
-</form>
+{% extends "anime/_base.html" %}
 
-<a href="{% url 'random_anime' %}">Random Anime</a>
-<a href="{% url 'view_list' %}">My List</a>
+{% block content %}
 
-<h4>Watching</h4>
 {% if watching %}
-    {% for anime in watching %}
-        <a href="{% url 'anime_view' anime.anilist_id %}" class="card">
-            <img src="{{ anime.image_url }}" width=100>
-        </a>
-        <form method="POST" action="{% url 'quick_increment' anime.anilist_id %}">
-            {% csrf_token %}
-            <input type="hidden" name="next" value="{{ request.path }}">
-            <button type="submit">+</button>
-        </form>
-        <p>{{ anime.progress }}/{{ anime.total_episodes }}</p>
-            
+    <ul class="list-group list-group-horizontal mt-3 ms-2" style="height: 250px;">
+    {% for anime in watching|slice:":4" %}
+        <li class="list-group-item">
+            <a href="{% url 'anime_view' anime.anilist_id %}">
+                <img src="{{ anime.image_url }}" style="width: 8rem; height: auto;">
+            </a>
+            <div class="d-flex gap-2">
+                <p class="mt-2">{{ anime.progress }}/{{ anime.total_episodes }}</p>
+                <form method="POST" action="{% url 'quick_increment' anime.anilist_id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button class="btn btn-primary btn-sm my-2" type="submit">+</button>
+                </form>
+            </div>
+        </li>
     {% endfor %}
-{% else %}
-    <p>Empty list</p>
+    </ul>
 {% endif %}
 <hr>
 
 {% if anime_list %}
-    <ul>
+    <div class="list-group">
         {% for anime in anime_list %}
-            <a href="{% url 'anime_view' anime.id %}" class="card">
-                    <p>{{ anime.title.romaji }}</p>
-                    <img src="{{ anime.coverImage.large }}" width=150>
-            </a>
+            <li class="list-group-item p-0 ms-2">
+                <a href="{% url 'anime_view' anime.id %}" class="list-group-item list-group-item-action">
+                    <div class="d-flex align-items-center">
+                        <img src="{{ anime.coverImage.large }}" 
+                             class="me-3" 
+                             style="width: 120px; height: 170px; object-fit: cover;">
+                        <div>
+                            <h6> 
+                                <strong class="mb-1 fs-4">{{ anime.title.romaji }}</strong>
+                            </h6>
+                            <small class="text-muted">Airing Status: {{ anime.status }}</small><br>
+                            {% if anime.episodes == 1 %}
+                                <small class="text-muted">Episode Count: 1</small>
+                            {% else %}
+                                <small class="text-muted">Episode Count: {{ anime.episodes }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            </li>
         {% endfor %}
-    </ul>
+        </div>
 {% endif %}
 
+{% endblock %}
 
